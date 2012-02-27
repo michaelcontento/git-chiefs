@@ -2,7 +2,7 @@
 
 ## Installation
 
-    $ curl https://raw.github.com/michaelcontento/git-chiefs/master/install | bash 
+    $ curl -s https://raw.github.com/michaelcontento/git-chiefs/master/install | bash 
 
 ## License
 

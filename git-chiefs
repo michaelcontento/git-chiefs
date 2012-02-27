@@ -62,7 +62,7 @@ for branch in $(listBranches $REMOTE_NAME $IGNORE_BRANCHES); do
     owner=$(detectOwner $REMOTE_NAME/$COMPARE_BRANCH $branch)
 
     if [ "$owner" == "" ]; then
-        # This is a little more slower / complicated but can resolve already
+        # This is a little slower / complicated, but can resolve already 
         # merged branches.
         ancestor=$(detectAncestor $REMOTE_NAME/$COMPARE_BRANCH $branch)
         owner=$(detectOwner $ancestor $branch)

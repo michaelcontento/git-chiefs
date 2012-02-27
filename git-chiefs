@@ -5,57 +5,69 @@ set -e
 IGNORE_BRANCHES="(HEAD|master|develop|production|stage)"
 COMPARE_BRANCH="develop"
 REMOTE_NAME="origin"
-REMOTE_BRANCHES=$(git branch -r \
-    | cut -c2- \
-    | grep $REMOTE_NAME \
-    | egrep -v $IGNORE_BRANCHES)
-    
-COLOR_RED="\033[0;31m"
-COLOR_BLUE="\033[0;34m"
-COLOR_RESET="\033[0m"
 
-for branch in $REMOTE_BRANCHES; do
-    # The easy way. Branch is ahead of the given compare branch.
-    owner=$(git shortlog --no-merges --first-parent --summary \
-        $REMOTE_NAME/$COMPARE_BRANCH..$branch \
+function detectOwner() 
+{
+    local master=$1
+    local topic=$2
+
+    echo $(git shortlog --no-merges --first-parent --summary \
+        $master..$topic \
         | sort -r \
         | head -n 1 \
         | tr -d "\t" \
         | sed "s/^ *\([0-9]*\) *\(.*\)/\2 (\1)/g")
+}
+
+function detectAncestor()
+{
+    local master=$1
+    local topic=$2
+    
+    # See: http://stackoverflow.com/a/4991675
+    echo $(diff -u \
+        <(git rev-list --first-parent $master) \
+        <(git rev-list --first-parent $topic) \
+        | sed -ne 's/^ //p' \
+        | head -n 1)
+}
+
+function listBranches()
+{
+    local remote=$1
+    local ignoredBranches=$2
+
+    echo $(git branch -r \
+        | cut -c2- \
+        | grep $remote \
+        | egrep -v $ignoredBranches)
+}
+
+function colorizeOwner()
+{
+    local owner=$@
+
+    local COLOR_RED="\033[0;31m"
+    local COLOR_BLUE="\033[0;34m"
+    local COLOR_RESET="\033[0m"
 
     if [ "$owner" == "" ]; then
-        # Damn. This is a little more complicated!
-        # See: http://stackoverflow.com/a/4991675
-        ancestor=$(diff -u \
-            <(git rev-list --first-parent $branch) \
-            <(git rev-list --first-parent $REMOTE_NAME/$COMPARE_BRANCH) \
-            | sed -ne 's/^ //p' \
-            | head -n 1)
-        owner=$(git shortlog --first-parent --no-merges --summary \
-            $ancestor..$branch \
-            | sort -r \
-            | head -n 1 \
-            | tr -d "\t" \
-            | sed "s/^ *\([0-9]*\) *\(.*\)/\2 (\1)/g")
-
-        if [ "$owner" == "" ]; then
-            echo "" > /dev/null
-            # God damn. Still nothing found? 
-            # I need to dive into the git internals. Maybe the whole thing
-            # could be solved with one small / easy / readable way instead of
-            # this "works most of the time two-way"-solution.
-        else
-            owner="$owner"
-        fi
-    fi
-
-    # Some pretty colors
-    if [ "$owner" == "" ]; then
-        owner="${COLOR_RED}UNKNOWN"
+        echo "${COLOR_RED}UNKNOWN${COLOR_RESET}"
     else
-        owner="${COLOR_BLUE}${owner}"
+        echo "${COLOR_BLUE}${owner}${COLOR_RESET}"
+    fi
+}
+
+for branch in $(listBranches $REMOTE_NAME $IGNORE_BRANCHES); do
+    owner=$(detectOwner $REMOTE_NAME/$COMPARE_BRANCH $branch)
+
+    if [ "$owner" == "" ]; then
+        # This is a little more slower / complicated but can resolve already
+        # merged branches.
+        ancestor=$(detectAncestor $REMOTE_NAME/$COMPARE_BRANCH $branch)
+        owner=$(detectOwner $ancestor $branch)
     fi
 
-    # And we're done :)
-    echo -e "${branch} - ${owner}${COLOR_RESET}"
+    owner=$(colorizeOwner $owner)
+    echo -e "${branch} - ${owner}"
 done

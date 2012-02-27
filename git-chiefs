@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 IGNORE_BRANCHES="(HEAD|master|develop|production|stage)"
 COMPARE_BRANCH="develop"
 REMOTE_NAME="origin"

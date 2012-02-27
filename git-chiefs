@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-set -e
+COMPARE_BRANCH=$( git config --get chief.referene || echo "master")
+IGNORE_BRANCHES=$(git config --get chief.ignore   || echo "")
+REMOTE_NAME=$(    git config --get chief.remote   || echo "origin")
 
-IGNORE_BRANCHES="(HEAD|master|develop|production|stage)"
-COMPARE_BRANCH="develop"
-REMOTE_NAME="origin"
+set -e
 
 function detectOwner() 
 {
@@ -37,10 +37,17 @@ function listBranches()
     local remote=$1
     local ignoredBranches=$2
 
-    echo $(git branch -r \
+    local branches=$(git branch -r \
         | cut -c2- \
         | grep $remote \
-        | egrep -v $ignoredBranches)
+        | egrep -v "HEAD")
+
+    if [ "$ignoredBranches" != "" ]; then
+        branches=$(echo "$branches" \
+            | egrep -v $ignoredBranches)
+    fi
+
+    echo $branches
 }
 
 function colorizeOwner()

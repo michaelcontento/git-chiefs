@@ -1,5 +1,9 @@
 # [Git-Chiefs][]
 
+## Installation
+
+    $ curl https://raw.github.com/michaelcontento/git-chiefs/master/install | bash 
+
 ## License
 
     Copyright 2009-2012 Michael Contento <michaelcontento@gmail.com>

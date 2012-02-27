@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+SRC="https://raw.github.com/michaelcontento/git-chiefs/master/git-chiefs"
+DST="/usr/local/bin/git-chiefs"
+
+curl -s $SRC > $DST
+chmod +x $DST
+
+echo "git-chiefs installed to $DST"

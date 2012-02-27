@@ -24,7 +24,15 @@ for branch in $REMOTE_BRANCHES; do
             | head -n 1 \
             | cut -c8-)
 
-        owner="$owner \033[1;32m!?"
+        if [ "$owner" == "" ]; then
+            echo "" > /dev/null
+            # God damn. Still nothing found? 
+            # I need to dive into the git internals. Maybe the whole thing
+            # could be solved with one small / easy / readable way instead of
+            # this "works most of the time two-way"-solution.
+        else
+            owner="$owner \033[1;32m!?"
+        fi
     fi
 
     # Some pretty colors

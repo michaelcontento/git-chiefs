@@ -1,17 +1,39 @@
 #!/bin/bash
 
 IGNORE_BRANCHES="(HEAD|master|develop|production|stage)"
-COMPARE_BRANCH="master"
+COMPARE_BRANCH="develop"
 REMOTE_BRANCHES=$(git branch -r | egrep -v $IGNORE_BRANCHES)
 
 for branch in $REMOTE_BRANCHES; do
-    owner=$(git shortlog -s $COMPARE_BRANCH..$branch | head -n 1 | cut -c8-)
+    # The easy way. Branch is ahead of the given compare branch.
+    owner=$(git shortlog --no-merges -s $COMPARE_BRANCH..$branch \
+        | sort -r \
+        | head -n 1 \
+        | cut -c8-)
 
+    if [ "$owner" == "" ]; then
+        # Damn. This is a little more complicated!
+        # See: http://stackoverflow.com/a/4991675
+        ancestor=$(diff -u \
+            <(git rev-list --first-parent $branch) \
+            <(git rev-list --first-parent $COMPARE_BRANCH) \
+            | sed -ne 's/^ //p' \
+            | head -n 1)
+        owner=$(git shortlog --no-merges -s $ancestor..$branch \
+            | sort -r \
+            | head -n 1 \
+            | cut -c8-)
+
+        owner="$owner \033[1;32m!?"
+    fi
+
+    # Some pretty colors
     if [ "$owner" == "" ]; then
         owner="\033[0;31mUNKNOWN"
     else
         owner="\033[0;34m$owner"
     fi
 
+    # And we're done :)
     echo -e "$branch - $owner\033[0m"
 done

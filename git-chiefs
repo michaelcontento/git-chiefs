@@ -58,7 +58,7 @@ function colorizeOwner()
     fi
 }
 
-for branch in $(listBranches $REMOTE_NAME $IGNORE_BRANCHES); do
+for branch in $(listBranches $REMOTE_NAME "$IGNORE_BRANCHES"); do
     owner=$(detectOwner $REMOTE_NAME/$COMPARE_BRANCH $branch)
 
     if [ "$owner" == "" ]; then

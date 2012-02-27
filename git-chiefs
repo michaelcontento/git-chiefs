@@ -4,6 +4,10 @@ IGNORE_BRANCHES="(HEAD|master|develop|production|stage)"
 COMPARE_BRANCH="develop"
 REMOTE_BRANCHES=$(git branch -r | egrep -v $IGNORE_BRANCHES)
 
+COLOR_RED="\033[0;31m"
+COLOR_BLUE="\033[0;34m"
+COLOR_RESET="\033[0m"
+
 for branch in $REMOTE_BRANCHES; do
     # The easy way. Branch is ahead of the given compare branch.
     owner=$(git shortlog --no-merges --first-parent --summary \
@@ -39,11 +43,11 @@ for branch in $REMOTE_BRANCHES; do
 
     # Some pretty colors
     if [ "$owner" == "" ]; then
-        owner="\033[0;31mUNKNOWN"
+        owner="${COLOR_RED}UNKNOWN"
     else
-        owner="\033[0;34m$owner"
+        owner="${COLOR_BLUE}${owner}"
     fi
 
     # And we're done :)
-    echo -e "$branch - $owner\033[0m"
+    echo -e "${branch} - ${owner}${COLOR_RESET}"
 done

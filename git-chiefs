@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IGNORE_BRANCHES="(HEAD|master|develop|production)"
+IGNORE_BRANCHES="(HEAD|master|develop|production|stage)"
 COMPARE_BRANCH="master"
 REMOTE_BRANCHES=$(git branch -r | egrep -v $IGNORE_BRANCHES)
 

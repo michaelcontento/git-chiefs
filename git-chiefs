@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-COMPARE_BRANCH=$( git config --get chief.referene || echo "master")
-IGNORE_BRANCHES=$(git config --get chief.ignore   || echo "")
-REMOTE_NAME=$(    git config --get chief.remote   || echo "origin")
+CONFIG_IGNORE=$(   git config --get chief.ignore    || echo "")
+CONFIG_REFERENCE=$(git config --get chief.reference || echo "master")
+CONFIG_REMOTE=$(   git config --get chief.remote    || echo "origin")
 
 set -e
 
@@ -65,13 +65,13 @@ function colorizeOwner()
     fi
 }
 
-for branch in $(listBranches $REMOTE_NAME "$IGNORE_BRANCHES"); do
-    owner=$(detectOwner $REMOTE_NAME/$COMPARE_BRANCH $branch)
+for branch in $(listBranches $CONFIG_REMOTE "$CONFIG_IGNORE"); do
+    owner=$(detectOwner $CONFIG_REMOTE/$CONFIG_REFERENCE $branch)
 
     if [ "$owner" == "" ]; then
         # This is a little slower / complicated, but can resolve already 
         # merged branches.
-        ancestor=$(detectAncestor $REMOTE_NAME/$COMPARE_BRANCH $branch)
+        ancestor=$(detectAncestor $CONFIG_REMOTE/$CONFIG_REFERENCE $branch)
         owner=$(detectOwner $ancestor $branch)
     fi
 

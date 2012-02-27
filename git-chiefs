@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 IGNORE_BRANCHES="(HEAD|master|develop|production|stage)"
 COMPARE_BRANCH="develop"

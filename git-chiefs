@@ -6,7 +6,8 @@ REMOTE_BRANCHES=$(git branch -r | egrep -v $IGNORE_BRANCHES)
 
 for branch in $REMOTE_BRANCHES; do
     # The easy way. Branch is ahead of the given compare branch.
-    owner=$(git shortlog --no-merges -s $COMPARE_BRANCH..$branch \
+    owner=$(git shortlog --no-merges --first-parent --summary \
+        $COMPARE_BRANCH..$branch \
         | sort -r \
         | head -n 1 \
         | cut -c8-)
@@ -19,7 +20,8 @@ for branch in $REMOTE_BRANCHES; do
             <(git rev-list --first-parent $COMPARE_BRANCH) \
             | sed -ne 's/^ //p' \
             | head -n 1)
-        owner=$(git shortlog --no-merges -s $ancestor..$branch \
+        owner=$(git shortlog --first-parent --no-merges --summary \
+            $ancestor..$branch \
             | sort -r \
             | head -n 1 \
             | cut -c8-)
@@ -31,7 +33,7 @@ for branch in $REMOTE_BRANCHES; do
             # could be solved with one small / easy / readable way instead of
             # this "works most of the time two-way"-solution.
         else
-            owner="$owner \033[1;32m!?"
+            owner="$owner"
         fi
     fi
 

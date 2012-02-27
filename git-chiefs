@@ -15,7 +15,7 @@ COLOR_RESET="\033[0m"
 for branch in $REMOTE_BRANCHES; do
     # The easy way. Branch is ahead of the given compare branch.
     owner=$(git shortlog --no-merges --first-parent --summary \
-        $COMPARE_BRANCH..$branch \
+        $REMOTE_NAME/$COMPARE_BRANCH..$branch \
         | sort -r \
         | head -n 1 \
         | cut -c8-)
@@ -25,7 +25,7 @@ for branch in $REMOTE_BRANCHES; do
         # See: http://stackoverflow.com/a/4991675
         ancestor=$(diff -u \
             <(git rev-list --first-parent $branch) \
-            <(git rev-list --first-parent $COMPARE_BRANCH) \
+            <(git rev-list --first-parent $REMOTE_NAME/$COMPARE_BRANCH) \
             | sed -ne 's/^ //p' \
             | head -n 1)
         owner=$(git shortlog --first-parent --no-merges --summary \

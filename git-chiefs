@@ -1,0 +1,17 @@
+#!/bin/bash
+
+IGNORE_BRANCHES="(HEAD|master|develop|production)"
+COMPARE_BRANCH="master"
+REMOTE_BRANCHES=$(git branch -r | egrep -v $IGNORE_BRANCHES)
+
+for branch in $REMOTE_BRANCHES; do
+    owner=$(git shortlog -s $COMPARE_BRANCH..$branch | head -n 1 | cut -c8-)
+
+    if [ "$owner" == "" ]; then
+        owner="\033[0;31mUNKNOWN"
+    else
+        owner="\033[0;34m$owner"
+    fi
+
+    echo -e "$branch - $owner\033[0m"
+done

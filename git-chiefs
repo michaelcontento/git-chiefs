@@ -2,8 +2,12 @@
 
 IGNORE_BRANCHES="(HEAD|master|develop|production|stage)"
 COMPARE_BRANCH="develop"
-REMOTE_BRANCHES=$(git branch -r | egrep -v $IGNORE_BRANCHES)
-
+REMOTE_NAME="origin"
+REMOTE_BRANCHES=$(git branch -r \
+    | cut -c2- \
+    | grep $REMOTE_NAME \
+    | egrep -v $IGNORE_BRANCHES)
+    
 COLOR_RED="\033[0;31m"
 COLOR_BLUE="\033[0;34m"
 COLOR_RESET="\033[0m"

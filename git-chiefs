@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-CONFIG_IGNORE=$(   git config --get chief.ignore    || echo "")
-CONFIG_REFERENCE=$(git config --get chief.reference || echo "master")
-CONFIG_REMOTE=$(   git config --get chief.remote    || echo "origin")
+CONFIG_IGNORE=$(   git config --get chiefs.ignore    || echo "")
+CONFIG_REFERENCE=$(git config --get chiefs.reference || echo "master")
+CONFIG_REMOTE=$(   git config --get chiefs.remote    || echo "origin")
 
 set -e
 

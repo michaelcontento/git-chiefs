@@ -11,9 +11,8 @@ function detectOwner()
     local master=$1
     local topic=$2
 
-    echo $(git shortlog --no-merges --first-parent --summary \
+    echo $(git shortlog --no-merges --first-parent --summary --numbered \
         $master..$topic \
-        | sort -r \
         | head -n 1 \
         | tr -d "\t" \
         | sed "s/^ *\([0-9]*\) *\(.*\)/\2 (\1)/g")
